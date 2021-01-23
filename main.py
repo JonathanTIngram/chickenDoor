@@ -8,6 +8,8 @@
 
 import RPi.GPIO as GPIO
 import time
+from datetime import datetime
+import timer
 #import touch
 
 servoPIN1 = 15
@@ -27,6 +29,11 @@ p2 = GPIO.PWM(servoPIN2, 50)
 p1.start(2.5)  #initalization
 p2.start(2.5)
 
+def get_month(dt_string):
+
+	#get_current date 
+	datetime_object = datetime.now()
+	timer.month_to_time(datetime_object.month)
 #def touch_rotate(touchCount):
 	#tc = touchCount % 2
 	#t = touch.read_touch()
@@ -43,7 +50,7 @@ def rotate(angle):
 		print(angle, "increasing")
 		p1.ChangeDutyCycle(angle) #this is what actually makes it spin
 		p2.ChangeDutyCycle(angle)
-		time.sleep(3) #change this value for change length of rotation
+		time.sleep(5) #change this value for change length of rotation
 
 	if (angle == 0):
 		angle += 10
@@ -58,11 +65,14 @@ def test(val):
 	#just for testing
 	p1.ChangeDutyCycle(val)
 	p2.ChangeDutyCycle(val)				
+
+
 try:
-	 rotate(0) #to down
-	 rotate(10) #up
-
-
+	# now = datetime.now()
+	# dt_string = now.strftime('%d/%m/%Y %H:%M:%S')
+	# get_month(dt_string)
+	rotate(0)
+	rotate(10)	
 except KeyboardInterrupt:
 	p1.stop()
 	p2.stop()
