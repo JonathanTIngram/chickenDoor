@@ -10,7 +10,7 @@ import RPi.GPIO as GPIO
 import time
 from datetime import datetime
 import timer
-#import touch
+
 
 servoPIN1 = 15
 servoPIN2 = 27
@@ -34,14 +34,7 @@ def get_month(dt_string):
 	#get_current date 
 	datetime_object = datetime.now()
 	timer.month_to_time(datetime_object.month)
-#def touch_rotate(touchCount):
-	#tc = touchCount % 2
-	#t = touch.read_touch()
-	#if (t):
-		#if (tc == 0):
-			#rotate(0)
-		#else:#
-			#rotate(10)
+
 def rotate(angle):
  
 	if (angle > 0):
@@ -68,9 +61,6 @@ def test(val):
 
 
 try:
-	# now = datetime.now()
-	# dt_string = now.strftime('%d/%m/%Y %H:%M:%S')
-	# get_month(dt_string)
 	rotate(0)
 	rotate(10)	
 except KeyboardInterrupt:
