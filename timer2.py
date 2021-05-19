@@ -70,7 +70,7 @@ def open_door():
 def close_door():
 
     x=datetime.today()
-    y=x.replace(hour=18, minute=30, second=0, microsecond=0) #set for 18:30 to close door everyday
+    y=x.replace(hour=19, minute=30, second=0, microsecond=0) #set for 18:30 to close door everyday
     delta_t=y-x
 
     secs=delta_t.seconds+1
