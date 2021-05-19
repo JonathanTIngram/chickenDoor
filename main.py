@@ -43,14 +43,14 @@ def rotate(angle):
 		print(angle, "increasing")
 		p1.ChangeDutyCycle(angle) #this is what actually makes it spin
 		p2.ChangeDutyCycle(angle)
-		time.sleep(5) #change this value for change length of rotation
+		time.sleep(15) #change this value for change length of rotation
 
 	if (angle == 0):
 		angle += 10
 		print(angle, "decreasing")
 		p1.ChangeDutyCycle(angle) #this is what actually makes it spin
 		p2.ChangeDutyCycle(angle)
-		time.sleep(0) #change this
+		time.sleep(13) #change this
 
 GPIO.setwarnings(False)
 

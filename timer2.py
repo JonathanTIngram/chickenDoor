@@ -7,6 +7,8 @@
 from datetime import datetime
 from threading import Timer
 
+import main
+
 # x=datetime.today()
 # y=x.replace(hour=6, minute=30, second=0, microsecond=0) #set for 06:30 to open door everyday
 # delta_t=y-x
@@ -61,6 +63,8 @@ def open_door():
         """) 
     #found via http://www.ascii-art.de/ascii/c/chicken.txt
 
+    main.rotate(10)
+
 
 
 def close_door():
@@ -109,6 +113,8 @@ def close_door():
 
         """) 
     #found via http://www.ascii-art.de/ascii/c/chicken.txt
+
+    main.rotate(0)
 
     
 
