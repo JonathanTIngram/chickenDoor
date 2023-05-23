@@ -18,6 +18,24 @@ fs.readFile('isOpen.txt', 'utf8', (err, data) => {
   console.log(isOpen);
 });
 
+fs.readFile('openingTime.txt', 'utf8', (err, data) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
+  openingTime = data;
+  console.log(openingTime);
+});
+
+fs.readFile('closingTime.txt', 'utf8', (err, data) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
+  closingTime = data;
+  console.log(closingTime);
+});
+
 app.use(express.static("client"));
 
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
@@ -31,7 +49,6 @@ app.post('/setTimes', (req, res) => {
   closingTime = req.body.closingTime;
   console.log(`Opening Time: ${openingTime}`);
   console.log(`Closing Time: ${closingTime}`);
-  // Write opening time to "openingTime.txt"
   fs.writeFile('openingTime.txt', openingTime, (err) => {
     if (err) {
       console.error(err);
@@ -39,7 +56,6 @@ app.post('/setTimes', (req, res) => {
     }
     console.log('Opening time written to openingTime.txt');
   });
-  // Write closing time to "closingTime.txt"
   fs.writeFile('closingTime.txt', closingTime, (err) => {
     if (err) {
       console.error(err);
@@ -50,56 +66,127 @@ app.post('/setTimes', (req, res) => {
   res.redirect('/');
 });
 
-app.get('/openDoor', (req, res) => {
-  console.log(isOpen);
-  if (isOpen == 0) {
-    exec("python3 pythonScripts/openDoor.py", (error, stdout, stderr) => {
-      if (error) {
-        console.log(`error: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        return;
-      }
-      console.log(`stdout: ${stdout}`);
-    });
-    isOpen = 1;
-    fs.writeFile('isOpen.txt', isOpen.toString(), (err) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      res.sendFile(path.join(__dirname, 'client/open.html'));
-    });
+function checkTime() {
+  const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  console.log(`Current Time: ${currentTime}`);
+
+  if (currentTime === openingTime) {
+    if (isOpen == 0) {
+      app.get('/openDoor', (req, res) => {
+        console.log(isOpen);
+        if (isOpen == 0) {
+          exec("python3 pythonScripts/openDoor.py", (error, stdout, stderr) => {
+            if (error) {
+              console.log(`error: ${error.message}`);
+              return;
+            }
+            if (stderr) {
+              console.log(`stderr: ${stderr}`);
+              return;
+            }
+            console.log(`stdout: ${stdout}`);
+          });
+          isOpen = 1;
+          fs.writeFile('isOpen.txt', isOpen.toString(), (err) => {
+            if (err) {
+              console.error(err);
+              return;
+            }
+            res.redirect('/openDoor');
+          });
+        } else {
+          res.redirect('/');
+        }
+      });
+    }
   }
+
+  if (currentTime === closingTime) {
+    if (isOpen == 1) {
+      app.get('/closeDoor', (req, res) => {
+        console.log(isOpen);
+        if (isOpen == 1) {
+          exec("python3 pythonScripts/closeDoor.py", (error, stdout, stderr) => {
+            if (error) {
+              console.log(`error: ${error.message}`);
+              return;
+            }
+            if (stderr) {
+              console.log(`stderr: ${stderr}`);
+              return;
+            }
+            console.log(`stdout: ${stdout}`);
+          });
+          isOpen = 0;
+          fs.writeFile('isOpen.txt', isOpen.toString(), (err) => {
+            if (err) {
+              console.error(err);
+              return;
+            }
+            res.redirect('/closeDoor');
+          });
+        } else {
+          res.redirect('/');
+        }
+      });
+    }
+  }
+}
+
+setInterval(checkTime, 1000); // Check time every second
+
+app.get('/openDoor', (req, res) => {
+      if (isOpen == 0) {
+      exec("python3 pythonScripts/openDoor.py", (error, stdout, stderr) => {
+        if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          return;
+        }
+        console.log(`stdout: ${stdout}`);
+      });
+      isOpen = 1;
+      fs.writeFile('isOpen.txt', isOpen.toString(), (err) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        res.redirect('/openDoor');
+      });
+    } else {
+      res.redirect('/');
+    }
 });
 
 app.get('/closeDoor', (req, res) => {
-  console.log(isOpen);
-  if (isOpen == 1) {
-    exec("python3 pythonScripts/closeDoor.py", (error, stdout, stderr) => {
-      if (error) {
-        console.log(`error: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        return;
-      }
-      console.log(`stdout: ${stdout}`);
-    });
-    isOpen = 0;
-    fs.writeFile('isOpen.txt', isOpen.toString(), (err) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      res.sendFile(path.join(__dirname, 'client/close.html'));
-    });
-  }
+      if (isOpen == 1) {
+      exec("python3 pythonScripts/closeDoor.py", (error, stdout, stderr) => {
+        if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          return;
+        }
+        console.log(`stdout: ${stdout}`);
+      });
+      isOpen = 0;
+      fs.writeFile('isOpen.txt', isOpen.toString(), (err) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        res.redirect('/closeDoor');
+      });
+    } else {
+      res.redirect('/');
+    }
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`Server is running on port ${port}`);
 });
